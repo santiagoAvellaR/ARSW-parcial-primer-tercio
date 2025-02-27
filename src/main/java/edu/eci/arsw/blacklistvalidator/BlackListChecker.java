@@ -40,6 +40,7 @@ public class BlackListChecker extends Thread{
                     ocurrencesCount.addAndGet(1);
                 }
             }
+            break;
         }
         doneSignal.countDown();
         System.out.println("hilo: " + this.getName() + " termino");
