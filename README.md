@@ -79,4 +79,8 @@ En el modelo paralelizado se tienen estas respuestas con las mismas entradas.
 
 ## Bono
 Para realizar el bono, también se usa un **AtomicInteger**, cada vez que el hilo revisa una lista, suma. Como cada hilo no trabaja de más una vez se determina el resultado. La variable al final de la ejecución tiene el número total de listas que se revisaron.
+Se realizo una impresión, aunque el código original ya traía algo implementado.
+![](img/bono-code.png)
 
+En el siguiente caso, podemos ver que el programa hace la revisión de todas las listas cuando no la encuentra.
+![](img/bono-result.png)
