@@ -31,6 +31,7 @@ public class BlackListChecker extends Thread{
     @Override
     public void run() {
         HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
+        // el while es innecesario, se itera una vez de más, pero hace que la salida de los datos se vea mas ordenada
         while(ocurrencesCount.get() < BLACK_LIST_ALARM_COUNT){
             System.out.println("hilo: " + this.getName() + " revisando ....");
             for (int i=start; (i < end) && (ocurrencesCount.get() < BLACK_LIST_ALARM_COUNT); i++){

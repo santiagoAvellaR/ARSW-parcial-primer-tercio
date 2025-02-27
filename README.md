@@ -46,3 +46,28 @@ Para 'refactorizar' este código, y hacer que explote la capacidad multi-núcleo
 **Bono**
 
 Haga que también imprima el número TOTAL de registros revisados en las listas de todos los hilos, es decir, imprimir el número de listas negras revisadas VS. el número de listas negras total(80,000). Se debe garantizar que dicha información sea verídica bajo el nuevo esquema de procesamiento en paralelo planteado.
+
+
+### Solución
+Para solucionar el problema y hacerlo más rápido, con la ayuda de hilos, se dividieron los segementos de las listas a revisar, según la cantidad de hilos
+para así poder repartir el trabajo entre los diferentes hilos, cada hilo se encarga de revisar su propio segmento.
+
+![](img/divison-hilos.png)
+
+La clase que se creó para dividir el trabajo fue BlackListChecker.
+Una vez dividido el trabajo, cada hilo por detrás se encarga de revisar dirección por dirección. Mientras que el numero de direcciones encontradas
+sea menor al límite, para evitar tiempo de ejecución innecesario. Es decir que en el momento en el que encuentra una más, frena y deja de trabajar cada hilo.
+
+![](img/checker-class.png)
+
+Para evitar condiciones de carrera, tanto la lista, como el contador de ocurrencias y el contador de listas verificadas
+se utilizaron mediante clases **ThreadSafe**. AtomicInteger y CopyOnWriteArrayList. Ya que si dos hilos encontraban una coincidencia en simultaneo, 
+cada al acceder a estos recursos para modificarlos, habría podido ocurrir un evento inesperado, como que el resultado de alguno de los dos no se haya registrado.
+
+El hilo main responde si es **reportAsTrustworthy** o **reportAsNotTrustworthy**, una vez que **todos** los hilos han terminado su labor. Ya que hasta que cada uno de ellos no analice todas las opciones,
+no se puede determinar una respuesta. A no ser de que hayan determinado que es insegura, es decir, que la hayan encontrado más de **BLACK_LIST_ALARM_COUNT** apariciones sin antes haber terminado todas.
+Para ello se implementó **CountDownLatch**, que es más seguro que un **wait()** o **join()**.
+
+Una vez que cada hilo termina le notifica a **CountDownLatch** y cuando su cuenta regresiva llegue a 0, continua la ejecución del hilo donde se declaro el **CountDownLatch**. 
+
+
