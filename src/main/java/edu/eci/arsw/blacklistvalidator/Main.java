@@ -24,8 +24,6 @@ public class Main {
         blackListOcurrences=hblv.checkHost("212.24.24.55", NUMBER_THREADS);
         System.out.println("The host was found in the following blacklists:"+blackListOcurrences);
         System.out.println();
-
-
     }
     
 }

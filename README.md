@@ -68,6 +68,15 @@ El hilo main responde si es **reportAsTrustworthy** o **reportAsNotTrustworthy**
 no se puede determinar una respuesta. A no ser de que hayan determinado que es insegura, es decir, que la hayan encontrado más de **BLACK_LIST_ALARM_COUNT** apariciones sin antes haber terminado todas.
 Para ello se implementó **CountDownLatch**, que es más seguro que un **wait()** o **join()**.
 
-Una vez que cada hilo termina le notifica a **CountDownLatch** y cuando su cuenta regresiva llegue a 0, continua la ejecución del hilo donde se declaro el **CountDownLatch**. 
+Una vez que cada hilo termina le notifica a **CountDownLatch** y cuando su cuenta regresiva llegue a 0, continua la ejecución del hilo donde se declaro el **CountDownLatch**.
 
+En el modelo original se tenían estas respuesta con esta entradas.
+![](img/solucion-original.png)
+
+En el modelo paralelizado se tienen estas respuestas con las mismas entradas.
+![](img/solucion-hilos-1.png)
+![](img/solucion-hilos-2.png)
+
+## Bono
+Para realizar el bono, también se usa un **AtomicInteger**, cada vez que el hilo revisa una lista, suma. Como cada hilo no trabaja de más una vez se determina el resultado. La variable al final de la ejecución tiene el número total de listas que se revisaron.
 
