@@ -9,6 +9,7 @@ import edu.eci.arsw.spamkeywordsdatasource.HostBlacklistsDataSourceFacade;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,11 +32,12 @@ public class HostBlackListsValidator {
      * @param ipaddress suspicious host's IP address.
      * @return  Blacklists numbers where the given host's IP address was found.
      */
-    public List<Integer> checkHost(String ipaddress, int nummberThreads){
+    public List<Integer> checkHost(String ipaddress, int nummberThreads) throws InterruptedException {
         
         List<Integer> blackListOcurrences=new CopyOnWriteArrayList<>();
         AtomicInteger ocurrencesCount = new AtomicInteger(0);
         AtomicInteger checkedListsCount = new AtomicInteger(0);
+        CountDownLatch doneSignal = new CountDownLatch(nummberThreads);
 
         HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
         int chunkSize = skds.getRegisteredServersCount() / nummberThreads;
@@ -43,11 +45,14 @@ public class HostBlackListsValidator {
         for(int i = 0; i < nummberThreads; i++){
             int start = i*chunkSize;
             int end = i == nummberThreads-1 ? (i+1)*chunkSize : (i + 1) * chunkSize + (((i + 1) * chunkSize) % nummberThreads);
-            BlackListChecker blackListChecker = new BlackListChecker(ipaddress, ocurrencesCount, BLACK_LIST_ALARM_COUNT, blackListOcurrences, start, end, checkedListsCount);
+            BlackListChecker blackListChecker = new BlackListChecker(ipaddress, ocurrencesCount, BLACK_LIST_ALARM_COUNT, blackListOcurrences, start, end, checkedListsCount, doneSignal);
             blackListChecker.start();
         }
-
-        if (!(ocurrencesCount. get() >= BLACK_LIST_ALARM_COUNT)){
+        doneSignal.await();
+        if (ocurrencesCount.get() >= BLACK_LIST_ALARM_COUNT){
+            skds.reportAsNotTrustworthy(ipaddress);
+        }
+        else {
             skds.reportAsTrustworthy(ipaddress);
         }
         
