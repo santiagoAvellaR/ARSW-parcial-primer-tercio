@@ -56,7 +56,7 @@ para así poder repartir el trabajo entre los diferentes hilos, cada hilo se enc
 La clase que se creó para dividir el trabajo fue BlackListChecker.
 Una vez dividido el trabajo, cada hilo por detrás se encarga de revisar dirección por dirección. Mientras que el numero de direcciones encontradas
 sea menor al límite, para evitar tiempo de ejecución innecesario. Es decir que en el momento en el que encuentra una más, frena y deja de trabajar cada hilo.
-
+se dejaron algunos prints para ver la correcta concurrencia de los hilos.
 ![](img/checker-class.png)
 
 Para evitar condiciones de carrera, tanto la lista, como el contador de ocurrencias y el contador de listas verificadas
